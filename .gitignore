@@ -1,0 +1,16 @@
+# Python Cache (System generated files jo upload nahi karni hain)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment Variables (Jisme humare passwords aur keys rahenge)
+.env
+
+# Virtual Environment (Agar aage chalkar hum banate hain)
+venv/
+env/
+.venv/
+
+# OS/System Files (Kachra files jo Windows/Mac khud banata hai)
+.DS_Store
+Thumbs.db
