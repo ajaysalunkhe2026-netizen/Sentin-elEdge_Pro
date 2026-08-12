@@ -1,43 +1,56 @@
-# SentinelEdge: Enterprise-Grade Defensive Gateway
+# SentinelEdge
 
-SentinelEdge ek advanced cybersecurity framework hai jo Deception-based Defense (Honeypot) technique ka use karta hai. Yeh system attackers ko identify karke unhe real application ke bajaye ek controlled 'trap' environment mein redirect karta hai, jisse attacker ko lagta hai ki woh system hack kar raha hai, jabki woh ek surveillance trap mein hota hai.
+**Enterprise-Grade Deception Gateway**
 
-## 🚀 Key Features
-* **Transparent Proxy Deception:** Redirects ka use nahi karta. Attacker ko URL badalne ka pata nahi chalta.
-* **Malicious Signature Detection:** SQL Injection, XSS, aur automated scanning attempts ko real-time mein detect karta hai.
-* **Stealth Logs:** Attackers ke har activity ko `enterprise_audit.json` file mein log karta hai for forensic analysis.
-* **Zero-Friction Routing:** Legitimate users ko bina kisi rukawat ke real dashboard tak route karta hai.
+SentinelEdge is a lightweight defensive gateway that uses deception techniques to protect applications. It inspects incoming traffic in real time. Legitimate users are routed to the real application. Suspicious or malicious requests are silently redirected to a high-interaction honeypot — without the attacker realizing the switch.
 
-## 🛠️ Architecture
+## Features
 
+- **Transparent Deception** — No visible redirects. The attacker stays on the same URL.
+- **Multi-vector Detection** — SQL Injection, XSS, Path Traversal, Scanner signatures, and sensitive path probing.
+- **Scoring Engine** — Threat scoring instead of simple keyword matching.
+- **Structured Audit Logs** — Every threat and access event is logged in JSON for forensic analysis.
+- **Zero-Friction for Legitimate Users** — Clean traffic is proxied with minimal latency.
+- **Docker Ready** — One command deployment.
 
-- **Gateway (`main.py`):** Traffic ka entry point jo har request ko inspect karta hai.
-- **Real App (`real_site.py`):** Verified users ke liye corporate-grade secure dashboard.
-- **Honeypot (`dummy_site.py`):** Intruder ke liye trap (fake login portal).
+## Architecture
+Client → Gateway (port 8080)
+├── Clean traffic     → Real Application
+└── Suspicious traffic → Honeypot (Tarpit)
 
-## ⚙️ Installation & Usage
-1. **Prerequisites:**
-   Ensure Python and pip are installed. Install required libraries:
-   `pip install fastapi uvicorn httpx`
+## Quick Start (Docker)
 
-2. **Run System Modules (Open 3 separate terminals):**
-   - **Terminal 1 (Real App):** `uvicorn real_site:app --port 3000`
-   - **Terminal 2 (Honeypot):** `uvicorn dummy_site:app --port 4000`
-   - **Terminal 3 (Gateway):** `uvicorn main:app --port 8080`
+```bash
+docker compose up --build
+Test Scenarios
+Type,URL Example,Result
+Legitimate,http://localhost:8080,Real Dashboard
+SQL Injection,http://localhost:8080/login?user=1' OR 1=1--,Honeypot
+XSS Attempt,http://localhost:8080/search?q=<script>alert(1),Honeypot
+Scanner,"User-Agent containing ""sqlmap"" or ""nikto""",Honeypot
 
-3. **Access the System:**
-   - **Legitimate:** Visit `http://127.0.0.1:8080`
-   - **Malicious:** Visit `http://127.0.0.1:8080/login?user=1=1` (Trap triggered)
+Local Development (without Docker)
+pip install -r requirements.txt
 
-## 🤝 Contributing
-- Fork the project and create a feature branch.
-- Follow coding standards and add comments for new features.
-- Submit a Pull Request for review.
+# Terminal 1
+uvicorn real_site:app --port 3000
 
-## 🛡️ Security Policy
-- Vulnerabilities ko public na karein.
-- Security flaws milne par seedha report karein.
-- Updates ke liye repository check karte rahein.
+# Terminal 2
+uvicorn dummy_site:app --port 4000
 
----
-*Developed by Ajay Salunke | Secure Enterprise Solutions*
+# Terminal 3
+uvicorn main:app --port 8080
+
+Configuration
+Edit config.py or use environment variables:
+
+REAL_APP_URL
+HONEYPOT_URL
+THREAT_THRESHOLD (default 0.6)
+LOG_FILE
+Audit Logs
+All events are written to enterprise_audit.json.
+License
+MIT
+
+Developed by Ajay Salunkhe
