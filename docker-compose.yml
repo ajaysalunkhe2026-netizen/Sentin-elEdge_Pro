@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  gateway:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - ./logs:/app/logs
+    depends_on:
+      - real_app
+      - honeypot
+    environment:
+      - REAL_APP_URL=http://real_app:3000
+      - HONEYPOT_URL=http://honeypot:4000
+
+  real_app:
+    build: .
+    command: uvicorn real_site:app --host 0.0.0.0 --port 3000
+    expose:
+      - "3000"
+
+  honeypot:
+    build: .
+    command: uvicorn dummy_site:app --host 0.0.0.0 --port 4000
+    expose:
+      - "4000"
